@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VFS Fonts Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .font-test {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>PDFMake Font VFS Test</h1>
+    
+    <div class="test-section">
+        <h2>Font Loading Status</h2>
+        <div id="loading-status">
+            <div class="status info">Loading fonts...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Font Tests</h2>
+        <div id="font-tests">
+            <div class="font-test">
+                <strong>Roboto (English):</strong> <span id="roboto-test">Testing...</span>
+            </div>
+            <div class="font-test">
+                <strong>NotoSansArabic (Arabic):</strong> <span id="arabic-test">Testing...</span>
+            </div>
+            <div class="font-test">
+                <strong>NotoSansDevanagari (Hindi):</strong> <span id="hindi-test">Testing...</span>
+            </div>
+            <div class="font-test">
+                <strong>NotoSansHebrew (Hebrew):</strong> <span id="hebrew-test">Testing...</span>
+            </div>
+            <div class="font-test">
+                <strong>NotoSansThai (Thai):</strong> <span id="thai-test">Testing...</span>
+            </div>
+            <div class="font-test">
+                <strong>NotoSansCJK (Chinese):</strong> <span id="cjk-test">Testing...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>PDF Generation Test</h2>
+        <button onclick="testPDFGeneration()" id="pdf-test-btn">Generate Test PDF</button>
+        <div id="pdf-test-result"></div>
+    </div>
+
+    <!-- Include pdfmake -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    
+    <!-- Include VFS fonts -->
+    <script src="./vfs_fonts-base.js"></script>
+    <script src="./vfs_fonts-full.js"></script>
+
+    <script>
+        // Test font loading
+        function testFontLoading() {
+            const statusDiv = document.getElementById('loading-status');
+            
+            try {
+                // Check if VFS is loaded
+                if (typeof vfs !== 'undefined') {
+                    const fontCount = Object.keys(vfs).length;
+                    statusDiv.innerHTML = `<div class="status success">✅ VFS loaded successfully with ${fontCount} fonts</div>`;
+                    
+                    // Test individual fonts
+                    testIndividualFonts();
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ VFS not loaded</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Error loading VFS: ${error.message}</div>`;
+            }
+        }
+
+        function testIndividualFonts() {
+            const tests = [
+                { id: 'roboto-test', text: 'Hello World!', font: 'Roboto' },
+                { id: 'arabic-test', text: 'مرحبا بالعالم!', font: 'NotoSansArabic' },
+                { id: 'hindi-test', text: 'नमस्ते दुनिया!', font: 'NotoSansDevanagari' },
+                { id: 'hebrew-test', text: 'שלום עולם!', font: 'NotoSansHebrew' },
+                { id: 'thai-test', text: 'สวัสดีชาวโลก!', font: 'NotoSansThai' },
+                { id: 'cjk-test', text: '你好世界！', font: 'NotoSansCJK' }
+            ];
+
+            tests.forEach(test => {
+                const element = document.getElementById(test.id);
+                if (element) {
+                    element.textContent = test.text;
+                    element.style.fontFamily = test.font;
+                }
+            });
+        }
+
+        function testPDFGeneration() {
+            const resultDiv = document.getElementById('pdf-test-result');
+            const btn = document.getElementById('pdf-test-btn');
+            
+            btn.disabled = true;
+            btn.textContent = 'Generating PDF...';
+            
+            try {
+                const docDefinition = {
+                    content: [
+                        { text: 'VFS Fonts Test PDF', style: 'header' },
+                        { text: '\n' },
+                        { text: 'English: Hello World!', font: 'Roboto' },
+                        { text: 'Arabic: مرحبا بالعالم!', font: 'NotoSansArabic' },
+                        { text: 'Hindi: नमस्ते दुनिया!', font: 'NotoSansDevanagari' },
+                        { text: 'Hebrew: שלום עולם!', font: 'NotoSansHebrew' },
+                        { text: 'Thai: สวัสดีชาวโลก!', font: 'NotoSansThai' },
+                        { text: 'Chinese: 你好世界！', font: 'NotoSansCJK' }
+                    ],
+                    styles: {
+                        header: {
+                            fontSize: 18,
+                            bold: true,
+                            font: 'Roboto'
+                        }
+                    },
+                    defaultStyle: {
+                        fontSize: 12,
+                        font: 'Roboto'
+                    }
+                };
+
+                pdfMake.createPdf(docDefinition).download('vfs-fonts-test.pdf');
+                
+                resultDiv.innerHTML = '<div class="status success">✅ PDF generated successfully!</div>';
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">❌ Error generating PDF: ${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Test PDF';
+            }
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', testFontLoading);
+    </script>
+</body>
+</html>

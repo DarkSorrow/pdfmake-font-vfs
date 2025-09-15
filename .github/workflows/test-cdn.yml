@@ -1,0 +1,127 @@
+name: Test CDN Links
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test-cdn:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Test VFS files syntax
+        run: |
+          echo "Testing vfs_fonts-base.js syntax..."
+          node -c vfs_fonts-base.js
+          echo "✓ vfs_fonts-base.js syntax is valid"
+          
+          echo "Testing vfs_fonts-full.js syntax..."
+          node -c vfs_fonts-full.js
+          echo "✓ vfs_fonts-full.js syntax is valid"
+          
+      - name: Test VFS files loading
+        run: |
+          echo "Testing VFS files can be loaded..."
+          node -e "
+            const vfsBase = require('./vfs_fonts-base.js');
+            const vfsFull = require('./vfs_fonts-full.js');
+            
+            console.log('Base fonts available:', Object.keys(vfsBase).length);
+            console.log('Full fonts available:', Object.keys(vfsFull).length);
+            
+            // Check if expected fonts are present
+            const expectedFonts = [
+              'NotoSansArabic-Regular.ttf',
+              'NotoSansArabic-Bold.ttf',
+              'NotoSansDevanagari-Regular.ttf',
+              'NotoSansDevanagari-Bold.ttf',
+              'NotoSansHebrew-Regular.ttf',
+              'NotoSansHebrew-Bold.ttf',
+              'NotoSansThai-Regular.ttf',
+              'NotoSansThai-Bold.ttf',
+              'Roboto-Regular.ttf',
+              'Roboto-Medium.ttf',
+              'Roboto-Italic.ttf',
+              'Roboto-MediumItalic.ttf'
+            ];
+            
+            const missingFonts = expectedFonts.filter(font => !vfsBase[font]);
+            if (missingFonts.length > 0) {
+              console.error('Missing fonts in base VFS:', missingFonts);
+              process.exit(1);
+            }
+            
+            console.log('✓ All expected fonts present in base VFS');
+            
+            // Check CJK fonts in full VFS
+            const cjkFonts = [
+              'NotoSansCJK-Regular.ttf',
+              'NotoSansCJK-Medium.ttf'
+            ];
+            
+            const missingCJKFonts = cjkFonts.filter(font => !vfsFull[font]);
+            if (missingCJKFonts.length > 0) {
+              console.error('Missing CJK fonts in full VFS:', missingCJKFonts);
+              process.exit(1);
+            }
+            
+            console.log('✓ All expected CJK fonts present in full VFS');
+          "
+          
+      - name: Test CDN URLs
+        run: |
+          echo "Testing CDN URLs accessibility..."
+          
+          # Test base fonts CDN URL
+          BASE_URL="https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/vfs_fonts-base.js"
+          echo "Testing: $BASE_URL"
+          
+          if curl -s --head "$BASE_URL" | head -n 1 | grep -q "200 OK"; then
+            echo "✓ Base fonts CDN URL is accessible"
+          else
+            echo "⚠ Base fonts CDN URL may not be accessible yet (this is normal for new repositories)"
+          fi
+          
+          # Test full fonts CDN URL
+          FULL_URL="https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/vfs_fonts-full.js"
+          echo "Testing: $FULL_URL"
+          
+          if curl -s --head "$FULL_URL" | head -n 1 | grep -q "200 OK"; then
+            echo "✓ Full fonts CDN URL is accessible"
+          else
+            echo "⚠ Full fonts CDN URL may not be accessible yet (this is normal for new repositories)"
+          fi
+          
+      - name: Generate test report
+        run: |
+          echo "# CDN Test Report" > test-report.md
+          echo "" >> test-report.md
+          echo "## Test Results" >> test-report.md
+          echo "- ✅ VFS files syntax validation passed" >> test-report.md
+          echo "- ✅ VFS files loading test passed" >> test-report.md
+          echo "- ✅ All expected fonts present" >> test-report.md
+          echo "" >> test-report.md
+          echo "## CDN URLs" >> test-report.md
+          echo "- Base fonts: \`https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/vfs_fonts-base.js\`" >> test-report.md
+          echo "- Full fonts: \`https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/vfs_fonts-full.js\`" >> test-report.md
+          echo "" >> test-report.md
+          echo "## Usage Example" >> test-report.md
+          echo '```html' >> test-report.md
+          echo '<script src="https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/vfs_fonts-base.js"></script>' >> test-report.md
+          echo '```' >> test-report.md
+          
+          cat test-report.md
