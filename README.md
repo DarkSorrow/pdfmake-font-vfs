@@ -93,23 +93,64 @@ npm install pdfmake-font-vfs
 <script src="https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@latest/vfs_fonts-base.js"></script>
 ```
 
-2. Add CJK fonts as direct URLs:
+2. Configure fonts and load base fonts:
 ```javascript
-// CJK fonts as direct URLs (only load when needed)
-const cjkFonts = {
-  NotoSansCJK: {
-    normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Regular.ttf',
-    bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Medium.ttf',
-    italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Regular.ttf',
-    bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Medium.ttf'
+const CDN_BASE_URL = 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/';
+const fonts = {
+  'NotoSansArabic': {
+    normal: 'NotoSansArabic-Regular.ttf',
+    bold: 'NotoSansArabic-Bold.ttf',
+    italics: 'NotoSansArabic-Regular.ttf',
+    bolditalics: 'NotoSansArabic-Bold.ttf'
+  },
+  'NotoSansDevanagari': {
+    normal: 'NotoSansDevanagari-Regular.ttf',
+    bold: 'NotoSansDevanagari-Bold.ttf',
+    italics: 'NotoSansDevanagari-Regular.ttf',
+    bolditalics: 'NotoSansDevanagari-Bold.ttf'
+  },
+  'NotoSansHebrew': {
+    normal: 'NotoSansHebrew-Regular.ttf',
+    bold: 'NotoSansHebrew-Bold.ttf',
+    italics: 'NotoSansHebrew-Regular.ttf',
+    bolditalics: 'NotoSansHebrew-Bold.ttf'
+  },
+  'NotoSansThai': {
+    normal: 'NotoSansThai-Regular.ttf',
+    bold: 'NotoSansThai-Bold.ttf',
+    italics: 'NotoSansThai-Regular.ttf',
+    bolditalics: 'NotoSansThai-Bold.ttf'
+  },
+  'Roboto': {
+    normal: 'Roboto-Regular.ttf',
+    bold: 'Roboto-Medium.ttf',
+    italics: 'Roboto-Italic.ttf',
+    bolditalics: 'Roboto-MediumItalic.ttf'
   }
 };
 
-// Merge VFS fonts with CJK fonts
-const allFonts = Object.assign({}, vfs, cjkFonts);
+// Load base fonts from VFS
+const loadBaseFonts = async () => {
+  try {
+    const baseModule = await import(`${CDN_BASE_URL}vfs_fonts-base.js`);
+    pdfMake.vfs = baseModule.vfs;
+  } catch (error) {
+    console.error('Failed to load base fonts from CDN:', error);
+  }
+};
+
+// Add CJK fonts as direct URLs when needed
+if (supportCJK) {
+  fonts['NotoSansCJK'] = {
+    normal: `${CDN_BASE_URL}fonts/NotoSansCJK-Regular.ttf`,
+    bold: `${CDN_BASE_URL}fonts/NotoSansCJK-Medium.ttf`,
+    italics: `${CDN_BASE_URL}fonts/NotoSansCJK-Regular.ttf`,
+    bolditalics: `${CDN_BASE_URL}fonts/NotoSansCJK-Medium.ttf`
+  };
+}
 ```
 
-**Note:** The VFS already contains the font configuration for base fonts. You only need to add the CJK fonts with direct URLs.
+**Note:** Base fonts are loaded from VFS, CJK fonts use direct URLs only when needed.
 
 
 ### Font Configuration
