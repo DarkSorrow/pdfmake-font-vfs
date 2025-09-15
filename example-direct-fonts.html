@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFMake Direct Font URLs Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .example-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .font-demo {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 3px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .note {
+            background-color: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>PDFMake Direct Font URLs Example</h1>
+    
+    <div class="note">
+        <strong>Note:</strong> This example shows how to use individual font files directly from the CDN 
+        instead of VFS files. The fonts are loaded on-demand from their direct URLs.
+    </div>
+
+    <div class="example-section">
+        <h2>Font Demonstrations</h2>
+        
+        <div class="font-demo">
+            <strong>Roboto (English):</strong> Hello World! This is a sample text in English using Roboto font.
+        </div>
+        
+        <div class="font-demo">
+            <strong>NotoSansArabic (Arabic):</strong> مرحبا بالعالم! هذا نص عربي باستخدام خط نوتو سانس العربي.
+        </div>
+        
+        <div class="font-demo">
+            <strong>NotoSansDevanagari (Hindi):</strong> नमस्ते दुनिया! यह हिंदी में नोटो सैंस देवनागरी फॉन्ट का उदाहरण है।
+        </div>
+        
+        <div class="font-demo">
+            <strong>NotoSansHebrew (Hebrew):</strong> שלום עולם! זהו טקסט בעברית באמצעות גופן נוטו סנס עברי.
+        </div>
+        
+        <div class="font-demo">
+            <strong>NotoSansThai (Thai):</strong> สวัสดีชาวโลก! นี่คือตัวอย่างข้อความภาษาไทยด้วยฟอนต์โนโตซานส์ไทย
+        </div>
+        
+        <div class="font-demo">
+            <strong>NotoSansCJK (Chinese):</strong> 你好世界！这是使用思源黑体字体的中文示例文本。
+        </div>
+    </div>
+
+    <div class="example-section">
+        <h2>Generate PDF Examples</h2>
+        <p>Click the buttons below to generate PDFs using direct font URLs:</p>
+        
+        <button onclick="generateBasicPDF()">Basic Multilingual PDF</button>
+        <button onclick="generateStyledPDF()">Styled PDF with Different Fonts</button>
+        <button onclick="generateCJKPDF()">CJK Languages PDF</button>
+    </div>
+
+    <div class="example-section">
+        <h2>Code Example</h2>
+        <pre><code>// Font configuration using direct URLs
+const fonts = {
+  Roboto: {
+    normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Regular.ttf',
+    bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Medium.ttf',
+    italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Italic.ttf',
+    bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-MediumItalic.ttf'
+  },
+  NotoSansArabic: {
+    normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Regular.ttf',
+    bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Bold.ttf',
+    italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Regular.ttf',
+    bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Bold.ttf'
+  }
+  // ... add other fonts as needed
+};
+
+// Use with pdfmake
+const docDefinition = {
+  content: [
+    { text: 'Hello World - English', font: 'Roboto' },
+    { text: 'مرحبا بالعالم - Arabic', font: 'NotoSansArabic' }
+  ],
+  defaultStyle: { font: 'Roboto' }
+};
+
+pdfMake.createPdf(docDefinition, null, fonts).download('multilingual-document.pdf');</code></pre>
+    </div>
+
+    <!-- Include pdfmake -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script>
+        // Font configuration using direct CDN URLs
+        const fonts = {
+            Roboto: {
+                normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Regular.ttf',
+                bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Medium.ttf',
+                italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Italic.ttf',
+                bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-MediumItalic.ttf'
+            },
+            NotoSansArabic: {
+                normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Regular.ttf',
+                bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Bold.ttf',
+                italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Regular.ttf',
+                bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Bold.ttf'
+            },
+            NotoSansDevanagari: {
+                normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansDevanagari-Regular.ttf',
+                bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansDevanagari-Bold.ttf',
+                italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansDevanagari-Regular.ttf',
+                bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansDevanagari-Bold.ttf'
+            },
+            NotoSansHebrew: {
+                normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansHebrew-Regular.ttf',
+                bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansHebrew-Bold.ttf',
+                italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansHebrew-Regular.ttf',
+                bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansHebrew-Bold.ttf'
+            },
+            NotoSansThai: {
+                normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansThai-Regular.ttf',
+                bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansThai-Bold.ttf',
+                italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansThai-Regular.ttf',
+                bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansThai-Bold.ttf'
+            },
+            NotoSansCJK: {
+                normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Regular.ttf',
+                bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Medium.ttf',
+                italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Regular.ttf',
+                bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Medium.ttf'
+            }
+        };
+
+        function generateBasicPDF() {
+            const docDefinition = {
+                content: [
+                    { text: 'Multilingual PDF Example', style: 'header' },
+                    { text: '\n' },
+                    { text: 'English: Hello World!', font: 'Roboto' },
+                    { text: 'Arabic: مرحبا بالعالم!', font: 'NotoSansArabic' },
+                    { text: 'Hindi: नमस्ते दुनिया!', font: 'NotoSansDevanagari' },
+                    { text: 'Hebrew: שלום עולם!', font: 'NotoSansHebrew' },
+                    { text: 'Thai: สวัสดีชาวโลก!', font: 'NotoSansThai' }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true,
+                        font: 'Roboto'
+                    }
+                },
+                defaultStyle: {
+                    fontSize: 12,
+                    font: 'Roboto'
+                }
+            };
+
+            pdfMake.createPdf(docDefinition, null, fonts).download('basic-multilingual.pdf');
+        }
+
+        function generateStyledPDF() {
+            const docDefinition = {
+                content: [
+                    { text: 'Styled Multilingual Document', style: 'title' },
+                    { text: '\n' },
+                    { 
+                        text: 'English Text', 
+                        font: 'Roboto',
+                        bold: true,
+                        fontSize: 14
+                    },
+                    { 
+                        text: 'This is a sample English text using Roboto font with bold styling.',
+                        font: 'Roboto',
+                        fontSize: 12
+                    },
+                    { text: '\n' },
+                    { 
+                        text: 'Arabic Text', 
+                        font: 'NotoSansArabic',
+                        bold: true,
+                        fontSize: 14
+                    },
+                    { 
+                        text: 'هذا نص عربي باستخدام خط نوتو سانس العربي مع تنسيق عريض.',
+                        font: 'NotoSansArabic',
+                        fontSize: 12
+                    },
+                    { text: '\n' },
+                    { 
+                        text: 'Hindi Text', 
+                        font: 'NotoSansDevanagari',
+                        bold: true,
+                        fontSize: 14
+                    },
+                    { 
+                        text: 'यह हिंदी में नोटो सैंस देवनागरी फॉन्ट का उदाहरण है।',
+                        font: 'NotoSansDevanagari',
+                        fontSize: 12
+                    }
+                ],
+                styles: {
+                    title: {
+                        fontSize: 20,
+                        bold: true,
+                        font: 'Roboto',
+                        alignment: 'center'
+                    }
+                },
+                defaultStyle: {
+                    fontSize: 12,
+                    font: 'Roboto'
+                }
+            };
+
+            pdfMake.createPdf(docDefinition, null, fonts).download('styled-multilingual.pdf');
+        }
+
+        function generateCJKPDF() {
+            const docDefinition = {
+                content: [
+                    { text: 'CJK Languages PDF', style: 'title' },
+                    { text: '\n' },
+                    { 
+                        text: 'Chinese (Simplified)', 
+                        font: 'NotoSansCJK',
+                        bold: true,
+                        fontSize: 14
+                    },
+                    { 
+                        text: '你好世界！这是使用思源黑体字体的中文示例文本。',
+                        font: 'NotoSansCJK',
+                        fontSize: 12
+                    },
+                    { text: '\n' },
+                    { 
+                        text: 'Chinese (Traditional)', 
+                        font: 'NotoSansCJK',
+                        bold: true,
+                        fontSize: 14
+                    },
+                    { 
+                        text: '你好世界！這是使用思源黑體字體的中文範例文本。',
+                        font: 'NotoSansCJK',
+                        fontSize: 12
+                    },
+                    { text: '\n' },
+                    { 
+                        text: 'Japanese', 
+                        font: 'NotoSansCJK',
+                        bold: true,
+                        fontSize: 14
+                    },
+                    { 
+                        text: 'こんにちは世界！これはNoto Sans CJKフォントを使用した日本語のサンプルテキストです。',
+                        font: 'NotoSansCJK',
+                        fontSize: 12
+                    },
+                    { text: '\n' },
+                    { 
+                        text: 'Korean', 
+                        font: 'NotoSansCJK',
+                        bold: true,
+                        fontSize: 14
+                    },
+                    { 
+                        text: '안녕하세요 세계! 이것은 Noto Sans CJK 폰트를 사용한 한국어 샘플 텍스트입니다.',
+                        font: 'NotoSansCJK',
+                        fontSize: 12
+                    }
+                ],
+                styles: {
+                    title: {
+                        fontSize: 20,
+                        bold: true,
+                        font: 'Roboto',
+                        alignment: 'center'
+                    }
+                },
+                defaultStyle: {
+                    fontSize: 12,
+                    font: 'Roboto'
+                }
+            };
+
+            pdfMake.createPdf(docDefinition, null, fonts).download('cjk-languages.pdf');
+        }
+    </script>
+</body>
+</html>

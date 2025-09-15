@@ -23,13 +23,55 @@ Includes all base fonts plus:
 
 ### Via CDN (Recommended)
 
-#### Base Fonts
+#### Hybrid Approach (Recommended)
+Use VFS for base fonts and direct URLs for CJK fonts:
+
 ```html
+<!-- Include base fonts via VFS -->
 <script src="https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@latest/vfs_fonts-base.js"></script>
 ```
 
-#### Full Fonts (includes CJK)
+```javascript
+// Add CJK fonts as direct URLs
+const cjkFonts = {
+  NotoSansCJK: {
+    normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Regular.ttf',
+    bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Medium.ttf',
+    italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Regular.ttf',
+    bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Medium.ttf'
+  }
+};
+
+// Merge with VFS fonts
+const allFonts = Object.assign({}, vfs, cjkFonts);
+```
+
+#### Individual Font Files (All URLs)
+Reference all font files directly in your pdfmake configuration:
+
+```javascript
+const fonts = {
+  Roboto: {
+    normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Regular.ttf',
+    bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Medium.ttf',
+    italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-Italic.ttf',
+    bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/Roboto-MediumItalic.ttf'
+  },
+  NotoSansArabic: {
+    normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Regular.ttf',
+    bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Bold.ttf',
+    italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Regular.ttf',
+    bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansArabic-Bold.ttf'
+  }
+  // ... other fonts
+};
+```
+
+#### VFS Files Only
+If you prefer the traditional VFS approach:
+
 ```html
+<script src="https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@latest/vfs_fonts-base.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@latest/vfs_fonts-full.js"></script>
 ```
 
@@ -42,22 +84,37 @@ npm install pdfmake-font-vfs
 
 ### Basic Setup
 
-1. Include pdfmake and the VFS fonts:
+#### Hybrid Approach (Recommended)
+
+1. Include pdfmake and base fonts via VFS:
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@latest/vfs_fonts-base.js"></script>
 ```
 
-2. Configure pdfmake to use the fonts:
+2. Add CJK fonts as direct URLs:
 ```javascript
-// The VFS fonts are automatically registered when the script loads
-// You can now use the fonts in your document definition
+// CJK fonts as direct URLs (only load when needed)
+const cjkFonts = {
+  NotoSansCJK: {
+    normal: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Regular.ttf',
+    bold: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Medium.ttf',
+    italics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Regular.ttf',
+    bolditalics: 'https://cdn.jsdelivr.net/gh/Darksorrow/pdfmake-font-vfs@main/fonts/NotoSansCJK-Medium.ttf'
+  }
+};
+
+// Merge VFS fonts with CJK fonts
+const allFonts = Object.assign({}, vfs, cjkFonts);
 ```
+
+**Note:** The VFS already contains the font configuration for base fonts. You only need to add the CJK fonts with direct URLs.
+
 
 ### Font Configuration
 
-The fonts are automatically registered with pdfmake. You can use them in your document definition:
+Use the fonts in your document definition by passing the fonts object to pdfMake.createPdf():
 
 ```javascript
 const docDefinition = {
@@ -92,16 +149,18 @@ const docDefinition = {
   }
 };
 
-pdfMake.createPdf(docDefinition).download('multilingual-document.pdf');
+// For hybrid approach, use allFonts (VFS + CJK URLs)
+pdfMake.createPdf(docDefinition, null, allFonts).download('multilingual-document.pdf');
+
+// For all direct URLs approach, use fonts
+// pdfMake.createPdf(docDefinition, null, fonts).download('multilingual-document.pdf');
 ```
 
 ### Available Font Styles
 
-Each font family supports the following styles:
+Each font that isn't in roboto do not support italics:
 - `normal`: Regular weight
 - `bold`: Bold weight
-- `italics`: Italic style
-- `bolditalics`: Bold italic style
 
 Example:
 ```javascript
@@ -146,8 +205,7 @@ Example:
 
 ## File Sizes
 
-- `vfs_fonts-base.js`: ~600KB (without CJK fonts)
-- `vfs_fonts-full.js`: ~11MB (includes CJK fonts)
+- `vfs_fonts-base.js`: ~2.5MB (without CJK fonts)
 
 Choose the base version if you don't need CJK support to reduce file size.
 
